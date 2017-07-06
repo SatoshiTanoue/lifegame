@@ -26,16 +26,6 @@ public class Map {
 		this.map[row][column] = true;
 	}
 
-	public void changeStateOfMap () {
-		int count = 0;
-
-		for (int i=-1; i<rowSize; i++) {
-			for (int j=0; j<columnSize; j++) {
-
-			}
-		}
-	}
-
 	public void printMap() {
 		for (int i=0; i<rowSize; i++) {
 			for (int j=0; j<columnSize; j++) {
@@ -46,42 +36,62 @@ public class Map {
 		}
 	}
 
-	public int countLiveCell(int x, int y) {
+	public void changeStateOfMap () {
+		int up,down,left,right;
+		boolean[][] temp=this.map;
+		for (int row = 0; row<rowSize; row++) {
+			for (int column = 0; column<columnSize; column++) {
+
+				//left = row - 1;して，そのあと if(left < 0) left = rowSize-1; のほうがいいかも？
+				//up,down,left,rightの値を設定する．
+				if (row == 0) left = rowSize-1;
+				else left = row - 1 ;
+
+				if (row == rowSize-1) right = 0;
+				else right = row + 1 ;
+
+				if (column == 0) up = columnSize-1;
+				else up = column - 1 ;
+
+				if (column == columnSize-1)  down=0;
+				else down = column + 1 ;
+
+				int count = countLivingCell(row,column,up,down,left,right);
+				//参考にしたURL:http://www.cse.kyoto-su.ac.jp/~oomoto/lecture/program/C/lifegame/index-j.html
+				if(count <= 1 ){
+					//死
+					temp[row][column] = false;
+				}else if(count == 2){
+				    //維持
+					//なにもしない
+				}else if(count == 3){
+					//誕生
+					temp[row][column] = true;
+				}else{
+					//死
+					temp[row][column] = false;
+				}
+			}
+		}
+		this.map = temp;
+	}
+
+	private int countLivingCell(int row, int column,int up,int down,int left,int right) {
+
 		int count = 0;
 
-		if (x < 0) x = rowSize - 1;
-		else if (x > rowSize -1 ) x = 0;
-
-		if (y < 0) y = columnSize - 1;
-		else if (y > columnSize - 1) y = 0;
-
-		if (this.map[x][y]) count++;
+		if (this.map[up][left]) count++;
+		if (this.map[up][column]) count++;
+		if (this.map[up][right]) count++;
+		if (this.map[row][left]) count++;
+		if (this.map[row][column]) ;
+		if (this.map[row][right]) count++;
+		if (this.map[down][left]) count++;
+		if (this.map[down][column]) count++;
+		if (this.map[down][right]) count++;
 
 		return count;
 	}
 
-	public void checkCountMap(int count) {
-		//周りの生の個数を数える
-		for (int i=0; i<rowSize; i++) {
-			for (int j=0; j<columnSize; j++) {
 
-				//過疎
-				if (count <= 1) {
-					this.map[i][j] = false;
-				}
-				//維持
-				else if (count == 2) {
-					//何もしない
-				}
-				//誕生
-				else if (count == 3) {
-					this.map[i][j] = true;
-				}
-				//過密
-				else if (count >= 4) {
-					this.map[i][j] = false;
-				}
-			}
-		}
-	}
 }
